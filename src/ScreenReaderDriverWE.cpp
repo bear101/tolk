@@ -24,6 +24,7 @@ ScreenReaderDriverWE::~ScreenReaderDriverWE() {
 }
 
 bool ScreenReaderDriverWE::Speak(const wchar_t *str, bool interrupt) {
+  if (!controller) return false;
   if (interrupt && !Silence()) return false;
   const BSTR bstr = SysAllocString(str);
   const bool succeeded = SUCCEEDED(speech->Speak(bstr, varOpt));
@@ -32,6 +33,7 @@ bool ScreenReaderDriverWE::Speak(const wchar_t *str, bool interrupt) {
 }
 
 bool ScreenReaderDriverWE::Braille(const wchar_t *str) {
+  if (!controller) return false;
   const BSTR bstr = SysAllocString(str);
   const bool succeeded = SUCCEEDED(braille->Display(bstr, varOpt, varOpt));
   SysFreeString(bstr);
@@ -39,6 +41,7 @@ bool ScreenReaderDriverWE::Braille(const wchar_t *str) {
 }
 
 bool ScreenReaderDriverWE::Silence() {
+  if (!controller) return false;
   return SUCCEEDED(speech->Silence());
 }
 
@@ -62,10 +65,9 @@ bool ScreenReaderDriverWE::Output(const wchar_t *str, bool interrupt) {
 }
 
 void ScreenReaderDriverWE::Initialize() {
-  if (FAILED(CoCreateInstance(CLSID_Application, NULL, CLSCTX_INPROC_SERVER, IID__Application, (void **)&controller)))
+  if (controller || FAILED(CoCreateInstance(CLSID_Application, NULL, CLSCTX_INPROC_SERVER, IID__Application, (void **)&controller)))
     return;
-  if (FAILED(controller->get_Speech(&speech)) ||
-        FAILED(controller->get_Braille(&braille))) {
+  if (FAILED(controller->get_Speech(&speech)) || FAILED(controller->get_Braille(&braille))) {
     Finalize();
     return;
   }

@@ -7,7 +7,7 @@
  */
 
 // The NVDA Project provides a header and libraries,
-// but we don't use these to support running even if the DLL is missing.
+// but we don't use these in order to support running even if the DLL is missing.
 
 #include "ScreenReaderDriverNVDA.h"
 
@@ -52,7 +52,7 @@ bool ScreenReaderDriverNVDA::Silence() {
 }
 
 bool ScreenReaderDriverNVDA::IsActive() {
-  // This needs an extra check because System Access pretends to be NVDA
+  // This needs an extra check because System Access pretends to be NVDA.
   if (nvdaController_testIfRunning) return  (!!FindWindow(L"wxWindowClassNR", L"NVDA") && nvdaController_testIfRunning() == 0);
   return false;
 }

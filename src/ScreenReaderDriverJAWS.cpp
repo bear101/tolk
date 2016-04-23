@@ -6,8 +6,10 @@
  *  License:        LGPLv3
  */
 
-#include "ScreenReaderDriverJAWS.h"
 #include <string>
+#include "ScreenReaderDriverJAWS.h"
+
+using namespace std;
 
 ScreenReaderDriverJAWS::ScreenReaderDriverJAWS() :
   ScreenReaderDriver(L"JAWS", true, true),
@@ -21,6 +23,7 @@ ScreenReaderDriverJAWS::~ScreenReaderDriverJAWS() {
 }
 
 bool ScreenReaderDriverJAWS::Speak(const wchar_t *str, bool interrupt) {
+  if (!controller) return false;
   const BSTR bstr = SysAllocString(str);
   VARIANT_BOOL result = VARIANT_FALSE;
   const VARIANT_BOOL flush = interrupt ? VARIANT_TRUE : VARIANT_FALSE;
@@ -30,9 +33,10 @@ bool ScreenReaderDriverJAWS::Speak(const wchar_t *str, bool interrupt) {
 }
 
 bool ScreenReaderDriverJAWS::Braille(const wchar_t *str) {
-  std::wstring wstr(str);
-  std::wstring::size_type i = wstr.find_first_of(L"\"");
-  while (i != std::wstring::npos) {
+  if (!controller) return false;
+  wstring wstr(str);
+  wstring::size_type i = wstr.find_first_of(L"\"");
+  while (i != wstring::npos) {
     wstr[i] = L'\'';
     i = wstr.find_first_of(L"\"", i + 1);
   }
@@ -46,6 +50,7 @@ bool ScreenReaderDriverJAWS::Braille(const wchar_t *str) {
 }
 
 bool ScreenReaderDriverJAWS::Silence() {
+  if (!controller) return false;
   return SUCCEEDED(controller->StopSpeech());
 }
 
@@ -66,7 +71,7 @@ bool ScreenReaderDriverJAWS::Output(const wchar_t *str, bool interrupt) {
 }
 
 void ScreenReaderDriverJAWS::Initialize() {
-  if (FAILED(CoCreateInstance(CLSID_JawsApi, NULL, CLSCTX_INPROC_SERVER, IID_IJawsApi, (void **)&controller))) {
+  if (controller || FAILED(CoCreateInstance(CLSID_JawsApi, NULL, CLSCTX_INPROC_SERVER, IID_IJawsApi, (void **)&controller))) {
     // This is here for symmetry with other drivers
     // and so compiling /analyze won't throw a warning.
     return;
