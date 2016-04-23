@@ -1,5 +1,5 @@
 
-cl /nologo /c /O2 /EHsc /GL /GR- /GS- /Gw /LD /MP /W4 /WL /D_EXPORTING /D_UNICODE /D_WINDOWS /D_WITH_JNI /DNDEBUG /DWIN64 /DUNICODE /Fobin\x64\ src\*.c src\*.cpp src\java\*.cpp
+cl /nologo /c /O2 /EHsc /GL /GR- /GS- /LD /MP /W4 /WL /D_EXPORTING /D_UNICODE /D_WINDOWS /DNDEBUG /DWIN64 /DUNICODE /Fobin\x64\ src\*.c src\*.cpp src\java\*.cpp
 
 rc /nologo /n /d _WIN64 /fo bin\x64\Tolk.res src\Tolk.rc
 
